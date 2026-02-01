@@ -38,3 +38,5 @@ jobs:
           tags: |
             ghcr.io/shadowarcanist/vixa:latest
             ghcr.io/shadowarcanist/vixa:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/shadowarcanist/vixa:cache
+          cache-to: type=registry,ref=ghcr.io/shadowarcanist/vixa:cache,mode=max
