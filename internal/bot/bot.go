@@ -67,18 +67,18 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 				Required:    true,
 			},
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "category",
-				Description: "Category for the file (optional if defaults set)",
-				Required:    false,
-				Choices:     b.getCategoryChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "category",
+				Description:  "Category for the file (optional if defaults set)",
+				Required:     false,
+				Autocomplete: true,
 			},
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "domain",
-				Description: "CDN domain (optional if defaults set)",
-				Required:    false,
-				Choices:     b.getDomainChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "domain",
+				Description:  "CDN domain (optional if defaults set)",
+				Required:     false,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -101,18 +101,18 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 		Description: "List all files in a category",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "domain",
-				Description: "CDN domain",
-				Required:    true,
-				Choices:     b.getDomainChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "domain",
+				Description:  "CDN domain",
+				Required:     true,
+				Autocomplete: true,
 			},
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "category",
-				Description: "Category name",
-				Required:    true,
-				Choices:     b.getCategoryChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "category",
+				Description:  "Category name",
+				Required:     true,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -122,18 +122,18 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 		Description: "Set default domain and category for uploads",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "domain",
-				Description: "Default CDN domain",
-				Required:    true,
-				Choices:     b.getDomainChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "domain",
+				Description:  "Default CDN domain",
+				Required:     true,
+				Autocomplete: true,
 			},
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "category",
-				Description: "Default category",
-				Required:    true,
-				Choices:     b.getCategoryChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "category",
+				Description:  "Default category",
+				Required:     true,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -143,18 +143,18 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 		Description: "Set auto-upload configuration for this channel",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "domain",
-				Description: "CDN domain for this channel",
-				Required:    true,
-				Choices:     b.getDomainChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "domain",
+				Description:  "CDN domain for this channel",
+				Required:     true,
+				Autocomplete: true,
 			},
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "category",
-				Description: "Category for this channel",
-				Required:    true,
-				Choices:     b.getCategoryChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "category",
+				Description:  "Category for this channel",
+				Required:     true,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -199,11 +199,11 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 		Description: "Remove a CDN domain",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "domain-name",
-				Description: "Domain to remove",
-				Required:    true,
-				Choices:     b.getDomainChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "domain-name",
+				Description:  "Domain to remove",
+				Required:     true,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -232,11 +232,11 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 		Description: "Remove a category",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Type:        discordgo.ApplicationCommandOptionString,
-				Name:        "category-name",
-				Description: "Category to remove",
-				Required:    true,
-				Choices:     b.getCategoryChoices(),
+				Type:         discordgo.ApplicationCommandOptionString,
+				Name:         "category-name",
+				Description:  "Category to remove",
+				Required:     true,
+				Autocomplete: true,
 			},
 		},
 	}
@@ -253,28 +253,6 @@ func (b *Bot) registerCommands(s *discordgo.Session) {
 	}
 }
 
-func (b *Bot) reregisterCommands(s *discordgo.Session) {
-	fmt.Println("[Discord] Refreshing command options...")
-
-	// First delete existing commands
-	existingCmds, err := s.ApplicationCommands(s.State.User.ID, "")
-	if err != nil {
-		fmt.Printf("[Discord] Failed to get existing commands: %v\n", err)
-		return
-	}
-
-	for _, cmd := range existingCmds {
-		err := s.ApplicationCommandDelete(s.State.User.ID, "", cmd.ID)
-		if err != nil {
-			fmt.Printf("[Discord] Failed to delete command %s: %v\n", cmd.Name, err)
-		}
-	}
-
-	// Register commands with updated choices
-	b.registerCommands(s)
-	fmt.Println("[Discord] Command options refreshed successfully")
-}
-
 func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 	fmt.Printf("[Discord] Logged in as %s#%s\n", event.User.Username, event.User.Discriminator)
 
@@ -289,32 +267,6 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	b.registerCommands(s)
 	b.commands["registered"] = true
-}
-
-func (b *Bot) getCategoryChoices() []*discordgo.ApplicationCommandOptionChoice {
-	categories := b.configManager.ListCategories()
-	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0, len(categories))
-	for _, cat := range categories {
-		displayName, _ := b.configManager.GetCategoryDisplayName(cat)
-		choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
-			Name:  displayName,
-			Value: cat,
-		})
-	}
-	return choices
-}
-
-func (b *Bot) getDomainChoices() []*discordgo.ApplicationCommandOptionChoice {
-	domains := b.configManager.ListDomains()
-	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0, len(domains))
-	for _, domain := range domains {
-		displayName, _ := b.configManager.GetDomainName(domain)
-		choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
-			Name:  displayName,
-			Value: domain,
-		})
-	}
-	return choices
 }
 
 func (b *Bot) onInteractionCreate(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -347,7 +299,81 @@ func (b *Bot) onInteractionCreate(s *discordgo.Session, i *discordgo.Interaction
 		}
 	case discordgo.InteractionMessageComponent:
 		b.handleComponentInteraction(s, i)
+	case discordgo.InteractionApplicationCommandAutocomplete:
+		b.handleAutocomplete(s, i)
 	}
+}
+
+func (b *Bot) handleAutocomplete(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	data := i.ApplicationCommandData()
+
+	// Get the focused option
+	var focusedOption *discordgo.ApplicationCommandInteractionDataOption
+	for _, opt := range data.Options {
+		if opt.Focused {
+			focusedOption = opt
+			break
+		}
+		// Handle sub-options for commands that have them
+		if len(opt.Options) > 0 {
+			for _, subOpt := range opt.Options {
+				if subOpt.Focused {
+					focusedOption = subOpt
+					break
+				}
+			}
+		}
+	}
+
+	if focusedOption == nil {
+		return
+	}
+
+	var choices []*discordgo.ApplicationCommandOptionChoice
+	userInput := strings.ToLower(focusedOption.StringValue())
+
+	switch focusedOption.Name {
+	case "domain", "domain-name":
+		domains := b.configManager.ListDomains()
+		for _, domain := range domains {
+			displayName, _ := b.configManager.GetDomainName(domain)
+			// Filter based on user input
+			if userInput == "" ||
+				strings.Contains(strings.ToLower(domain), userInput) ||
+				strings.Contains(strings.ToLower(displayName), userInput) {
+				choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
+					Name:  displayName,
+					Value: domain,
+				})
+			}
+		}
+	case "category", "category-name":
+		categories := b.configManager.ListCategories()
+		for _, category := range categories {
+			displayName, _ := b.configManager.GetCategoryDisplayName(category)
+			// Filter based on user input
+			if userInput == "" ||
+				strings.Contains(strings.ToLower(category), userInput) ||
+				strings.Contains(strings.ToLower(displayName), userInput) {
+				choices = append(choices, &discordgo.ApplicationCommandOptionChoice{
+					Name:  displayName,
+					Value: category,
+				})
+			}
+		}
+	}
+
+	// Discord allows max 25 choices
+	if len(choices) > 25 {
+		choices = choices[:25]
+	}
+
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionApplicationCommandAutocompleteResult,
+		Data: &discordgo.InteractionResponseData{
+			Choices: choices,
+		},
+	})
 }
 
 func (b *Bot) handleUpload(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -1147,11 +1173,8 @@ func (b *Bot) handleAddDomain(s *discordgo.Session, i *discordgo.InteractionCrea
 	}
 
 	_, _ = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
-		Content: fmt.Sprintf("Domain `%s` (%s) added successfully!. Refresh your discord app to use this new domain on other commands", domainURL, displayName),
+		Content: fmt.Sprintf("Domain `%s` (%s) added successfully!", domainURL, displayName),
 	})
-
-	// Refresh command options
-	go b.reregisterCommands(s)
 }
 
 func (b *Bot) handleRemoveDomain(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -1218,9 +1241,6 @@ func (b *Bot) handleRemoveDomain(s *discordgo.Session, i *discordgo.InteractionC
 	_, _ = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
 		Content: fmt.Sprintf("Domain `%s` (%s) has been removed successfully.", domainName, displayName),
 	})
-
-	// Refresh command options
-	go b.reregisterCommands(s)
 }
 
 func (b *Bot) handleAddCategory(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -1265,11 +1285,8 @@ func (b *Bot) handleAddCategory(s *discordgo.Session, i *discordgo.InteractionCr
 	}
 
 	_, _ = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
-		Content: fmt.Sprintf("Category `%s` (%s) added successfully! Refresh your discord app to use this new category on other commands", folderName, displayName),
+		Content: fmt.Sprintf("Category `%s` (%s) added successfully!", folderName, displayName),
 	})
-
-	// Refresh command options
-	go b.reregisterCommands(s)
 }
 
 func (b *Bot) handleRemoveCategory(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -1336,7 +1353,4 @@ func (b *Bot) handleRemoveCategory(s *discordgo.Session, i *discordgo.Interactio
 	_, _ = s.FollowupMessageCreate(i.Interaction, false, &discordgo.WebhookParams{
 		Content: fmt.Sprintf("Category `%s` (%s) has been removed successfully.", categoryName, displayName),
 	})
-
-	// Refresh command options
-	go b.reregisterCommands(s)
 }
