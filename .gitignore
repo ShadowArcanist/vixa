@@ -25,11 +25,6 @@ go.work
 *.swo
 *~
 
-# Config files
-configs/
-
-# Storage
-storage/
 
 # Environment variables
 .env.deployment
