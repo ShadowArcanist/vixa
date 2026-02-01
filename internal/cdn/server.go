@@ -26,7 +26,7 @@ func (s *Server) Handler() http.Handler {
 		host = strings.TrimPrefix(host, "http://")
 		host = strings.TrimPrefix(host, "https://")
 
-		domainName, ok := s.configManager.GetDomainName(host)
+		domainFolder, _, ok := s.configManager.GetDomainByFQDN(host)
 		if !ok {
 			s.serveNotFound(w, r)
 			return
@@ -55,7 +55,7 @@ func (s *Server) Handler() http.Handler {
 			return
 		}
 
-		data, contentType, err := s.storage.GetFile(domainName, category, filename)
+		data, contentType, err := s.storage.GetFile(domainFolder, category, filename)
 		if err != nil || data == nil {
 			s.serveNotFound(w, r)
 			return
