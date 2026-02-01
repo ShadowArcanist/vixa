@@ -1,0 +1,11 @@
+configs/
+storage/
+.github/
+
+.env.*
+.git
+.gitignore
+coolify-compose.yaml
+Taskfile.yaml
+README.md
+LICENSE

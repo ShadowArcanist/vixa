@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  vixa:
+    image: ghcr.io/shadowarcanist/vixa:latest
+    container_name: vixa
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Get token from https://discord.com/developers/applications
+      - BOT_TOKEN=
+    volumes:
+      # Change volume paths if needed (DON'T TOUCH THE PATH ON RIGHT SIDE!)
+      - ./storage:/app/storage
+      - ./configs:/app/configs

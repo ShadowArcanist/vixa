@@ -1,0 +1,10 @@
+services:
+  vixa:
+    image: ghcr.io/shadowarcanist/vixa:latest
+    environment:
+      - SERVICE_URL_VIXA_8080
+      - BOT_TOKEN=${BOT_TOKEN:?} # Get token from https://discord.com/developers/applications
+    volumes:
+      # Change volume paths if needed (DON'T TOUCH THE PATH ON RIGHT SIDE!)
+      - /data/vixa/storage:/app/storage
+      - /data/vixa/configs:/app/configs

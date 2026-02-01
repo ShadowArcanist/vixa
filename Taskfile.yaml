@@ -1,0 +1,19 @@
+# This file is only used for ShadowArcanist's custom deployment pipeline
+
+version: "3"
+
+# Load project-specific deployment config (git-ignored)
+dotenv:
+  - .env.deployment
+
+vars:
+  # Absolute path to the global deployment pipeline
+  DEPLOY_PIPELINE_DIR: "{{.HOME}}/developer/admin/deployment-pipeline"
+
+tasks:
+  deploy:
+    desc: Deploy this project using the global CI/CD pipeline
+    silent: true 
+    cmds:
+      - '[ -f "{{.DEPLOY_PIPELINE_DIR}}/Taskfile.yml" ] || { echo "Global Taskfile not found"; exit 1; }'
+      - task -d {{.DEPLOY_PIPELINE_DIR}} deploy PROJECT_DIR="{{.PWD}}"
