@@ -927,12 +927,14 @@ func (b *Bot) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) 
 		return
 	}
 
-	// Check for bot mention
+	// Check for bot mention (ignore reply pings)
 	botMentioned := false
-	for _, mention := range m.Mentions {
-		if mention.ID == s.State.User.ID {
-			botMentioned = true
-			break
+	if m.MessageReference == nil { // Only check mentions if NOT a reply message
+		for _, mention := range m.Mentions {
+			if mention.ID == s.State.User.ID {
+				botMentioned = true
+				break
+			}
 		}
 	}
 
