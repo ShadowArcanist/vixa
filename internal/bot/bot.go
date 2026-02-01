@@ -592,7 +592,7 @@ func (b *Bot) sendListPage(s *discordgo.Session, i *discordgo.Interaction, domai
 	for _, file := range files[start:end] {
 		encodedFile := url.PathEscape(file)
 		fileURL := fmt.Sprintf("https://%s/%s/%s", domainURL, encodedCategory, encodedFile)
-		sb.WriteString(fmt.Sprintf("- %s\n", fileURL))
+		sb.WriteString(fmt.Sprintf("- <%s>\n", fileURL))
 	}
 
 	embed := &discordgo.MessageEmbed{
@@ -690,7 +690,7 @@ func (b *Bot) handleComponentInteraction(s *discordgo.Session, i *discordgo.Inte
 	for _, file := range files[start:end] {
 		encodedFile := url.PathEscape(file)
 		fileURL := fmt.Sprintf("https://%s/%s/%s", domain, category, encodedFile)
-		sb.WriteString(fmt.Sprintf("- %s\n", fileURL))
+		sb.WriteString(fmt.Sprintf("- <%s>\n", fileURL))
 	}
 
 	embed := &discordgo.MessageEmbed{
@@ -1106,12 +1106,12 @@ func (b *Bot) onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) 
 	if len(uploadedURLs) > 0 {
 		var content string
 		if len(uploadedURLs) == 1 {
-			content = uploadedURLs[0]
+			content = fmt.Sprintf("<%s>", uploadedURLs[0])
 		} else {
 			var sb strings.Builder
 			sb.WriteString(fmt.Sprintf("Auto-uploaded %d file(s):\n", len(uploadedURLs)))
 			for _, url := range uploadedURLs {
-				sb.WriteString(fmt.Sprintf("- %s\n", url))
+				sb.WriteString(fmt.Sprintf("- <%s>\n", url))
 			}
 			content = sb.String()
 		}
